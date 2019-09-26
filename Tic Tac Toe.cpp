@@ -1,5 +1,5 @@
 // Tic Tac Toe.cpp :
-//Authors:Kai, Sakhan, Shreyas, ak-shay
+//Authors:Kai, Sakhan Bhatia, Akshay Muik 
 
 #include <iostream>
 #include <vector>
@@ -16,7 +16,7 @@ void assignWeight(char game[3][3]);
 bool checkWin(char game[3][3], char a);
 int calculateWeight(char game[3][3], int slotPos[2]);
 void playerInput(char game[3][3]);
-void coreProcess(char game[3][3]);
+void coreProcess(char game[3][3], int numMove);
 
 int main()
 {
@@ -30,27 +30,42 @@ int main()
 	cin >> input;
 	if (input == 'T')//player moves first
 	{
+		
 		playerInput(game);
 		display(game);
 		displayMatrix();//DEBUG
 		wipeStoredMatrix(storeMatrix);
-		coreProcess(game);
+
+		int numMove = 1;
+		coreProcess(game,numMove);
 	}
 	else 
 	{
-		coreProcess(game);//AI moves first
+		int numMove = 0;
+		coreProcess(game, numMove);//AI moves first
 	}
 
 }
 
-void coreProcess(char game[3][3])
+void coreProcess(char game[3][3], int numMove)
 {
 bool isWinMove = false;
-while (isWinMove!=true)
+while (isWinMove!=true && numMove<=9)
 	{
-	assignWeight(game);
-	checkWin(game, 'O');
-	checkWin(game, 'X');
+	//assignWeight(game);
+	//bool winning=checkWin(game, 'O');
+	//checkWin(game, 'X');
+	if (checkWin(game, 'O'))
+	{
+	}
+	else if (checkWin(game, 'X'))
+	{
+	}
+	else
+	{
+		assignWeight(game);
+	}
+
 	//read the weight matrix to get the best move
 	int moveI, moveJ, heighestVal = 0;
 	for (int i = 0; i < 3; i++)
@@ -65,6 +80,7 @@ while (isWinMove!=true)
 			}
 		}
 	}
+
 	displayMatrix();//DEBUG
 	game[moveI][moveJ] = 'O'; //move the best move
 	if (heighestVal == 100) //winning move, exit loop and print winning message
@@ -74,21 +90,33 @@ while (isWinMove!=true)
 		display(game);
 		return;
 	}
+	cout << "\n";
 	display(game);
+	
 	playerInput(game);
 	wipeStoredMatrix(storeMatrix);//reset the weight matrix after a trun(an AI move and a player move) 
+	numMove += 2;
+	if (numMove >= 9)
+	{
+		cout << "game is a draw!\n";
+		return;
+	}
 	}
 }
 
 
 void playerInput(char game[3][3]) 
 {
-	cout << "Please enter your move with 2 numbers" << "\n"
-		<< "which line?" << "\n";
-	int i,j;
-	cin >>i;
-	cout << "which column?" << "\n";
-	cin >> j;
+	int i, j;
+	do {
+		cout << "Please enter your move with 2 numbers" << "\n"
+			<< "which line?" << "\n";
+
+		cin >> i;
+		cout << "which column?" << "\n";
+		cin >> j;
+		if (game[i][j] != ' ') { printf("Slot Taken, Try again!\n"); }
+	} while (game[i][j] != ' ');
 	game[i][j] = 'X';
 }
 
@@ -197,7 +225,7 @@ bool checkWin(char game[3][3], char a)
 
 		//check first diagnoal(topleft to bottomright) 
 		int winNum = 0;
-		for (int i = 0; i < 3; i++)
+		for (i = 0; i < 3; i++)
 		{
 			if (game[i][i] == 'X') { break; }//automatically go to next row caz' we know this row fails
 
@@ -208,13 +236,13 @@ bool checkWin(char game[3][3], char a)
 		{
 			for (int k = 0; k < 3; k++)
 			{
-				if (arr[k] == ' ') { storeMatrix[k][i] = 100; return true; }
+				if (arr[k] == ' ') { storeMatrix[k][k] = 100; return true; }
 			}
 		}
 
 		//check second diagnoal(topright to bottomleft) 
 		winNum = 0;
-		for (int i = 0; i < 3; i++)
+		for (i = 0; i < 3; i++)
 		{
 			if (game[i][2-i] == 'X') { break; }//note how the reversed diagonal index work differently
 
@@ -225,7 +253,7 @@ bool checkWin(char game[3][3], char a)
 		{
 			for (int k = 0; k < 3; k++)
 			{
-				if (arr[k] == ' ') { storeMatrix[k][i] = 100; return true; }
+				if (arr[k] == ' ') { storeMatrix[k][2-k] = 100; return true; }
 			}
 		}
 	}
@@ -278,7 +306,7 @@ bool checkWin(char game[3][3], char a)
 
 		//check first diagnoal(topleft to bottomright) 
 		int winNum = 0;
-		for (int i = 0; i < 3; i++)
+		for (i = 0; i < 3; i++)
 		{
 			if (game[i][i] == 'O') { break; }//automatically go to next row caz' we know this row fails
 
@@ -289,13 +317,13 @@ bool checkWin(char game[3][3], char a)
 		{
 			for (int k = 0; k < 3; k++)
 			{
-				if (arr[k] == ' ') { storeMatrix[k][i] = 50; return true; }
+				if (arr[k] == ' ') { storeMatrix[k][k] = 50; return true; }
 			}
 		}
-
+		
 		//check second diagnoal(topright to bottomleft) 
 		winNum = 0;
-		for (int i = 0; i < 3; i++)
+		for (i = 0; i < 3; i++)
 		{
 			if (game[i][2 - i] == 'O') { break; }//note how the reversed diagonal index work differently
 
@@ -306,7 +334,7 @@ bool checkWin(char game[3][3], char a)
 		{
 			for (int k = 0; k < 3; k++)
 			{
-				if (arr[k] == ' ') { storeMatrix[k][i] = 50; return true; }
+				if (arr[k] == ' ') { storeMatrix[k][2-k] = 50; return true; }
 			}
 		}
 	}
@@ -329,6 +357,8 @@ void assignWeight(char game[3][3])
 		}		
 	}
 }
+
+
 
 //calculate weight for an emoty slot
 int calculateWeight(char game[3][3],  int slotPos[2])
